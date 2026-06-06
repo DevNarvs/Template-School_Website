@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Northwood — Effects & Styling Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #06080f; color: #e2e8f0; -webkit-font-smoothing: antialiased; }
+
+  .topbar { position: sticky; top: 0; z-index: 50; background: rgba(6,8,15,.92); backdrop-filter: blur(8px); border-bottom: 1px solid #1a2336; padding: 14px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .topbar h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; margin-right: 8px; }
+  .topbar h1 span { color: #8b97b0; font-weight: 500; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .tab { font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #2a3550; background: #121a2c; color: #cbd5e1; padding: 8px 14px; border-radius: 999px; transition: all .15s ease; }
+  .tab:hover { border-color: #3b4a6b; color: #fff; }
+  .tab.active { background: #4F46E5; border-color: #4F46E5; color: #fff; }
+  .hint { font-size: 12px; color: #64748b; width: 100%; margin-top: 4px; }
+
+  .stage { padding: 22px; max-width: 1180px; margin: 0 auto; }
+  .style-page { display: none; }
+  .style-page.active { display: block; }
+
+  /* ---- Components driven by per-style CSS variables ---- */
+  .surface { background: var(--page-bg); color: var(--body); border-radius: 28px; padding: clamp(22px, 3.2vw, 44px); overflow: hidden; box-shadow: 0 30px 90px -30px rgba(0,0,0,.7); }
+
+  .head { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px; margin-bottom: 28px; }
+  .head .title { flex: 1 1 320px; }
+  .sname { font-family: var(--font-display); color: var(--heading); font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
+  .stag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 8px; }
+  .verdict { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .verdict.ok { background: #DCFCE7; color: #166534; }
+  .verdict.fixed { background: #FEF3C7; color: #92400E; }
+  .vibe { color: var(--body); font-size: 15px; line-height: 1.6; max-width: 68ch; margin-top: 12px; }
+  .bestfor { color: var(--muted); font-size: 13px; line-height: 1.6; max-width: 72ch; margin-top: 8px; }
+
+  .grid { display: grid; gap: 18px; margin-top: 8px; }
+  .block { margin-top: 26px; }
+  .block > h3 { font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+
+  .panel { background: var(--panel-bg); border: var(--panel-border); -webkit-backdrop-filter: var(--panel-backdrop); backdrop-filter: var(--panel-backdrop); box-shadow: var(--panel-shadow); border-radius: var(--panel-radius); padding: 24px; transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s ease; }
+  .panel.lift:hover { transform: translateY(-4px); }
+
+  .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .btn { font-family: var(--font-body); font-size: 14px; font-weight: 600; padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer; transition: transform .15s ease, filter .15s ease, box-shadow .15s ease; }
+  .btn-primary { background: var(--btn-bg); color: var(--btn-color); box-shadow: var(--btn-shadow); }
+  .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.05); }
+  .btn-accent { background: var(--accent-bg); color: #fff; box-shadow: var(--btn-shadow); }
+  .btn-accent:hover { transform: translateY(-2px); filter: brightness(1.05); }
+  .btn-ghost { background: transparent; color: var(--accent-text); border: 1.5px solid var(--accent-text); }
+  .btn-ghost:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; filter: none; }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ring-offset, #fff), 0 0 0 4px #4F46E5; }
+
+  .cards { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  .eyebrow { font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-text); }
+  .ctitle { font-family: var(--font-display); color: var(--heading); font-size: 21px; font-weight: 700; margin: 8px 0; }
+  .cbody { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 16px; }
+  .kpi .label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .kpi .value { font-family: var(--font-display); font-size: 40px; font-weight: 800; color: var(--heading); font-variant-numeric: tabular-nums; line-height: 1.05; margin-top: 6px; }
+  .kpi .delta { font-size: 13px; font-weight: 700; color: #16A34A; margin-top: 4px; }
+
+  .field { max-width: 380px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--heading); margin-bottom: 6px; }
+  .field input { width: 100%; font: inherit; font-size: 15px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--input-border, rgba(128,128,128,.4)); background: var(--input-bg, rgba(255,255,255,.9)); color: #0f172a; }
+  .field input::placeholder { color: #64748b; }
+  .field input:focus { outline: none; border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79,70,229,.3); }
+  .field .help { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--panel-bg); -webkit-backdrop-filter: var(--panel-backdrop); backdrop-filter: var(--panel-backdrop); border: var(--panel-border); border-radius: 14px; overflow: hidden; }
+  thead th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 12px 16px; border-bottom: 1px solid rgba(128,128,128,.18); }
+  tbody td { padding: 12px 16px; font-size: 14px; color: var(--body); border-top: 1px solid rgba(128,128,128,.12); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+  .pill.ok { background: #DCFCE7; color: #166534; }
+  .pill.warnp { background: #FEF3C7; color: #92400E; }
+  .pill.dang { background: #FEE2E2; color: #991B1B; }
+
+  .toast { display: flex; gap: 10px; align-items: flex-start; padding: 13px 16px; border-radius: 14px; border: var(--panel-border); background: var(--panel-bg); -webkit-backdrop-filter: var(--panel-backdrop); backdrop-filter: var(--panel-backdrop); box-shadow: var(--panel-shadow); margin-bottom: 10px; max-width: 460px; }
+  .toast .dot { width: 10px; height: 10px; border-radius: 999px; margin-top: 5px; flex: none; }
+  .toast .tt { font-size: 14px; font-weight: 700; color: var(--heading); }
+  .toast .tb { font-size: 13px; color: var(--muted); }
+
+  .meta-foot { margin-top: 26px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); }
+  .meta-card { background: var(--panel-bg); border: var(--panel-border); border-radius: 14px; padding: 16px; }
+  .meta-card b { color: var(--heading); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .meta-card p { color: var(--muted); font-size: 13px; line-height: 1.55; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Northwood <span>· Effects &amp; Styling Gallery</span></h1>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-target="s-glass">Glassmorphism</button>
+    <button class="tab" data-target="s-aurora">Aurora Mesh</button>
+    <button class="tab" data-target="s-bento">Bento Grid</button>
+    <button class="tab" data-target="s-soft">Soft UI</button>
+    <button class="tab" data-target="s-neon">Dark Neon</button>
+    <button class="tab" data-target="s-clay">Claymorphism</button>
+  </nav>
+  <p class="hint">Six effect-forward treatments of the Bright Horizon brand — click to view 1 by 1. All accessibility-audited; ⚠→✅ = a contrast fix was applied.</p>
+</header>
+
+<main class="stage">
+  <section class="style-page active" id="s-glass"></section>
+  <section class="style-page" id="s-aurora"></section>
+  <section class="style-page" id="s-bento"></section>
+  <section class="style-page" id="s-soft"></section>
+  <section class="style-page" id="s-neon"></section>
+  <section class="style-page" id="s-clay"></section>
+</main>
+
+<script>
+const STYLES = {
+  "s-glass": {
+    name: "Aurora Glass", style: "Glassmorphism", verdict: "ok", verdictText: "✅ AA verified",
+    vibe: "Frosted translucent cards float above a luminous indigo-to-orange dawn mesh — airy, premium, optimistic. Confident for college, warm for families.",
+    bestFor: "Marketing & admissions: landing hero, program/feature cards, CTA sections, stat callouts. Hand dense tables/reports back to the solid base.",
+    fix: "Panel alpha pinned to ≥0.92 (+ opaque @supports fallback) and orange CTA anchored dark so every text pair clears AA over the gradient.",
+    motion: "Cards frost-in (fade + rise + 0.985→1 scale, staggered); panels lift with an expanding indigo glow; CTA blooms warm on hover; mesh drifts slowly (paused on reduced-motion).",
+    fonts: { display: "Outfit", body: "Inter" }, ringOffset: "#ffffff",
+    css: {
+      pageBg: "radial-gradient(120% 120% at 12% 8%, #4F46E5 0%, rgba(99,102,241,0.55) 32%, rgba(248,250,252,0) 58%), radial-gradient(110% 110% at 88% 18%, #FB923C 0%, rgba(234,88,12,0.45) 30%, rgba(248,250,252,0) 60%), radial-gradient(130% 130% at 70% 100%, #818CF8 0%, rgba(129,140,248,0.35) 35%, rgba(238,242,255,0) 65%), linear-gradient(165deg, #EEF2FF 0%, #F8FAFC 50%, #FFF7ED 100%)",
+      heading: "#0F172A", body: "#1E293B", muted: "#475569",
+      panelBg: "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.82) 100%)",
+      panelBorder: "1px solid rgba(255,255,255,0.65)", panelBackdrop: "blur(18px) saturate(150%)",
+      panelShadow: "0 8px 32px -8px rgba(79,70,229,0.28), 0 2px 8px -2px rgba(15,23,42,0.10), inset 0 1px 0 0 rgba(255,255,255,0.70)",
+      panelRadius: "20px",
+      btnBg: "linear-gradient(135deg, #C2410C 0%, #9A3412 100%)", btnColor: "#FFFFFF",
+      btnShadow: "0 8px 24px -6px rgba(194,65,12,0.45), inset 0 1px 0 0 rgba(255,255,255,0.25)",
+      accentBg: "linear-gradient(135deg, #C2410C 0%, #9A3412 100%)", accentText: "#9A3412",
+      inputBg: "rgba(255,255,255,0.85)", inputBorder: "#CBD5E1"
+    }
+  },
+  "s-aurora": {
+    name: "Aurora Bloom", style: "Aurora Gradient Mesh", verdict: "ok", verdictText: "✅ AA verified",
+    vibe: "A deep indigo night canvas lit by blurred indigo, violet and warm-orange blobs, with crisp solid panels holding the reading content. Electric for college prospects.",
+    bestFor: "High-energy marketing: college admissions & program heros, campaign landing pages, Apply/Visit CTA bands. Not for dense data.",
+    fix: "Violet CTA stop capped at #6D28D9 so white labels stay ≥5:1 across the whole gradient sweep.",
+    motion: "Hero blobs drift 18–26s (slow parallax wander); panels rise on entry; gradient CTA lifts + glows on hover; orange chips shimmer. All disabled on reduced-motion.",
+    fonts: { display: "Outfit", body: "Inter" }, ringOffset: "#0B1020",
+    css: {
+      pageBg: "radial-gradient(58rem 40rem at 12% -8%, rgba(99,102,241,0.55) 0%, rgba(99,102,241,0) 60%), radial-gradient(48rem 40rem at 92% 8%, rgba(124,58,237,0.50) 0%, rgba(124,58,237,0) 58%), radial-gradient(50rem 42rem at 78% 105%, rgba(234,88,12,0.42) 0%, rgba(234,88,12,0) 60%), radial-gradient(44rem 36rem at 18% 112%, rgba(79,70,229,0.40) 0%, rgba(79,70,229,0) 62%), linear-gradient(160deg, #0B1020 0%, #0E1430 50%, #0B1020 100%)",
+      heading: "#F8FAFC", body: "#E2E8F0", muted: "#A8B2CC",
+      panelBg: "linear-gradient(180deg, rgba(20,28,54,0.96) 0%, rgba(15,22,44,0.96) 100%)",
+      panelBorder: "1px solid rgba(165,180,252,0.22)", panelBackdrop: "blur(14px) saturate(115%)",
+      panelShadow: "0 24px 60px -20px rgba(5,8,20,0.75), inset 0 1px 0 0 rgba(255,255,255,0.06)",
+      panelRadius: "20px",
+      btnBg: "linear-gradient(100deg, #4F46E5 0%, #5B4FE8 45%, #6D28D9 100%)", btnColor: "#FFFFFF",
+      btnShadow: "0 10px 30px -8px rgba(79,70,229,0.65), 0 0 0 1px rgba(165,180,252,0.30) inset",
+      accentBg: "linear-gradient(100deg, #4F46E5 0%, #6D28D9 100%)", accentText: "#FDBA74",
+      inputBg: "rgba(20,28,54,0.85)", inputBorder: "rgba(165,180,252,0.30)"
+    }
+  },
+  "s-bento": {
+    name: "Indigo Bento Mosaic", style: "Bento Grid", verdict: "fixed", verdictText: "⚠→✅ fixed",
+    vibe: "An Apple-keynote tile wall in Northwood indigo: varied solid/tinted panels on a cool slate canvas, each a self-contained idea with generous corners and a single warm-orange moment.",
+    bestFor: "Program showcases, admissions sections, campus-life mosaics, stat/KPI walls, the homepage 'explore Northwood' grid and a college-program directory.",
+    fix: "Orange CTA gradient re-anchored to #C2410C→#9A3412 (the #EA580C light end gave white only 3.6:1); accent text deepened to #9A3412 for tinted tiles.",
+    motion: "Tiles rest flat, then lift + tilt toward the cursor (translateY(-6px) scale(1.015) + subtle 3D rotate) on a 220ms ease-out settle; featured tiles glow orange; stagger-fade on load.",
+    fonts: { display: "Outfit", body: "Inter" }, ringOffset: "#ffffff",
+    css: {
+      pageBg: "radial-gradient(1200px 600px at 12% -10%, #EEF2FF 0%, rgba(238,242,255,0) 55%), radial-gradient(1000px 520px at 100% 0%, #FFF1E8 0%, rgba(255,241,232,0) 50%), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)",
+      heading: "#0F172A", body: "#1E293B", muted: "#475569",
+      panelBg: "linear-gradient(180deg, #FFFFFF 0%, #FCFDFF 100%)",
+      panelBorder: "1px solid #E2E8F0", panelBackdrop: "none",
+      panelShadow: "0 1px 2px rgba(15,23,42,0.05), 0 10px 24px -14px rgba(15,23,42,0.16)",
+      panelRadius: "24px",
+      btnBg: "linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)", btnColor: "#FFFFFF",
+      btnShadow: "0 1px 2px rgba(15,23,42,0.12), 0 8px 18px -8px rgba(79,70,229,0.55)",
+      accentBg: "linear-gradient(135deg, #C2410C 0%, #9A3412 100%)", accentText: "#9A3412",
+      inputBg: "#FFFFFF", inputBorder: "#CBD5E1"
+    }
+  },
+  "s-soft": {
+    name: "Pressed Indigo", style: "Soft UI / Neumorphism", verdict: "fixed", verdictText: "⚠→✅ fixed",
+    vibe: "Surfaces feel pressed out of a single soft indigo-tinted clay, so controls invite touch like physical buttons. Calm, tactile, premium — organized & safe for families, modern for college.",
+    bestFor: "Parent/student dashboards, settings panels, enrollment wizards, KPI tiles, toggles/segmented controls, 'portal home' tiles. Avoid for dense tables/reports.",
+    fix: "Accent-as-text forced to #9A3412 (vivid #EA580C was 3.4:1 on the tinted surface); every control keeps an explicit 4px focus ring, not a shadow.",
+    motion: "Controls physically press: on :active, raised dual-shadow swaps to an inset 'pressed' shadow + scale(0.97); panels lift with a softened wider shadow on hover; toggles slide into a pressed track.",
+    fonts: { display: "Outfit", body: "Inter" }, ringOffset: "#EEF1F7",
+    css: {
+      pageBg: "radial-gradient(120% 120% at 50% 0%, #F2F5FB 0%, #EEF1F7 55%, #E7EBF4 100%)",
+      heading: "#0F172A", body: "#1E293B", muted: "#475569",
+      panelBg: "linear-gradient(145deg, #F4F6FC 0%, #E6EAF3 100%)",
+      panelBorder: "1px solid rgba(255,255,255,0.65)", panelBackdrop: "none",
+      panelShadow: "8px 8px 18px rgba(176,186,209,0.70), -8px -8px 18px rgba(255,255,255,0.95)",
+      panelRadius: "22px",
+      btnBg: "linear-gradient(145deg, #5A51EC 0%, #4338CA 100%)", btnColor: "#FFFFFF",
+      btnShadow: "6px 6px 14px rgba(140,150,180,0.55), -6px -6px 14px rgba(255,255,255,0.9), inset 0 1px 0 rgba(255,255,255,0.25)",
+      accentBg: "linear-gradient(145deg, #C2410C 0%, #9A3412 100%)", accentText: "#9A3412",
+      inputBg: "#F4F6FC", inputBorder: "#CBD5E1"
+    }
+  },
+  "s-neon": {
+    name: "Voltaic Midnight", style: "Dark Neon", verdict: "fixed", verdictText: "⚠→✅ fixed",
+    vibe: "Near-OLED slate surfaces lit by electric indigo-to-cyan, with warm orange as the single rationed spark. Like a modern research-lab microsite at night — confident, premium, futuristic.",
+    bestFor: "College/prospective-student landing pages, program-launch & admissions heros, 'apply now' campaigns, innovation-lab showcases, dark-mode dashboards.",
+    fix: "CTA flipped to cyan→light-cyan with a near-black label (the shipped indigo→cyan with dark label was only 3.0:1 at the indigo end).",
+    motion: "Panels carry a barely-there breathing glow; on hover cards lift while the gradient hairline border ramps indigo→cyan and the outer cyan glow intensifies; buttons get a sweeping sheen; focus fires an animated cyan ring.",
+    fonts: { display: "Outfit", body: "Inter" }, ringOffset: "#0B1120",
+    css: {
+      pageBg: "radial-gradient(1200px 700px at 78% -8%, rgba(34,211,238,0.16), transparent 60%), radial-gradient(1000px 620px at 8% 4%, rgba(79,70,229,0.22), transparent 58%), radial-gradient(820px 560px at 88% 108%, rgba(234,88,12,0.10), transparent 62%), linear-gradient(180deg, #0B1120 0%, #0A0F1C 55%, #090D17 100%)",
+      heading: "#F8FAFC", body: "#E2E8F0", muted: "#A3B1C6",
+      panelBg: "linear-gradient(160deg, rgba(23,32,50,0.92) 0%, rgba(17,24,39,0.96) 100%)",
+      panelBorder: "1px solid rgba(124,140,180,0.18)", panelBackdrop: "blur(14px) saturate(140%)",
+      panelShadow: "0 1px 0 rgba(165,180,252,0.10) inset, 0 18px 48px -16px rgba(2,6,23,0.85), 0 0 0 1px rgba(124,140,180,0.10), 0 0 36px -14px rgba(34,211,238,0.30)",
+      panelRadius: "16px",
+      btnBg: "linear-gradient(95deg, #22D3EE 0%, #67E8F9 100%)", btnColor: "#08111F",
+      btnShadow: "0 0 0 1px rgba(103,232,249,0.45) inset, 0 8px 22px -8px rgba(34,211,238,0.55), 0 4px 14px -6px rgba(79,70,229,0.55)",
+      accentBg: "linear-gradient(95deg, #4F46E5 0%, #22D3EE 100%)", accentText: "#67E8F9",
+      inputBg: "rgba(17,24,39,0.85)", inputBorder: "rgba(124,140,180,0.30)"
+    }
+  },
+  "s-clay": {
+    name: "Marshmallow Campus", style: "Claymorphism", verdict: "ok", verdictText: "✅ AA verified",
+    vibe: "Bright Horizon's indigo and orange reborn as soft air-filled clay you almost want to poke. Friendly for kindergarten parents, still tidy for a college open-day page.",
+    bestFor: "K-12 / early-years marketing: admissions landing pages, family onboarding, program & activity tiles, hero CTAs, welcome dashboards and empty states.",
+    fix: "Accent text kept at #9A3412 and chip rule enforced (dark ink on ≥#DDE1FF fills; white labels only on saturated gradients).",
+    motion: "Bouncy spring physics (cubic-bezier(0.34,1.56,0.64,1)): buttons/cards 'squish' on press (scale 0.93 with shadows tightening) then overshoot back; puffy surfaces lift on hover; gentle ambient clay-breathe on hero orbs.",
+    fonts: { display: "Fredoka", body: "DM Sans" }, ringOffset: "#ffffff",
+    css: {
+      pageBg: "radial-gradient(120% 120% at 12% 8%, #F4F1FC 0%, #EEF1FE 38%, #FBF1EA 100%)",
+      heading: "#312E81", body: "#1E293B", muted: "#475569",
+      panelBg: "linear-gradient(145deg, #FFFFFF 0%, #EEF0FF 100%)",
+      panelBorder: "2px solid rgba(255,255,255,0.85)", panelBackdrop: "none",
+      panelShadow: "10px 14px 30px -8px rgba(79,70,229,0.22), -8px -8px 22px -6px rgba(255,255,255,0.95), inset 3px 3px 8px rgba(255,255,255,0.9), inset -5px -6px 12px rgba(99,102,241,0.14)",
+      panelRadius: "28px",
+      btnBg: "linear-gradient(145deg, #5B52E8 0%, #4338CA 100%)", btnColor: "#FFFFFF",
+      btnShadow: "7px 9px 18px -4px rgba(67,56,202,0.45), -4px -4px 12px -2px rgba(165,180,252,0.55), inset 2px 2px 6px rgba(255,255,255,0.4), inset -3px -4px 9px rgba(49,46,129,0.45)",
+      accentBg: "linear-gradient(145deg, #C2410C 0%, #9A3412 100%)", accentText: "#9A3412",
+      inputBg: "#FFFFFF", inputBorder: "#C7D2FE"
+    }
+  }
+};
+
+function render(id) {
+  const s = STYLES[id];
+  return `
+  <div class="surface">
+    <div class="head">
+      <div class="title">
+        <span class="stag">${s.style}</span>
+        <div class="sname">${s.name}</div>
+        <p class="vibe">${s.vibe}</p>
+        <p class="bestfor"><strong>Best for:</strong> ${s.bestFor}</p>
+      </div>
+      <span class="verdict ${s.verdict}">${s.verdictText}</span>
+    </div>
+
+    <div class="block">
+      <h3>Buttons &amp; controls</h3>
+      <div class="row">
+        <button class="btn btn-primary">Apply now</button>
+        <button class="btn btn-accent">Schedule a visit</button>
+        <button class="btn btn-ghost">Explore programs</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Cards / panels</h3>
+      <div class="grid cards">
+        <div class="panel lift">
+          <div class="eyebrow">College · Engineering</div>
+          <div class="ctitle">B.S. Computer Science</div>
+          <div class="cbody">Theory, labs, and industry capstones with faculty mentorship across four years.</div>
+          <button class="btn btn-primary">View program</button>
+        </div>
+        <div class="panel lift kpi">
+          <div class="label">Enrolled students</div>
+          <div class="value">3,482</div>
+          <div class="delta">▲ 6.2% vs last year</div>
+        </div>
+        <div class="panel lift">
+          <div class="eyebrow">K-12 · Admissions</div>
+          <div class="ctitle">Open House</div>
+          <div class="cbody">Tour campus, meet teachers, and see a day in the life of a Northwood student.</div>
+          <button class="btn btn-accent">Reserve a spot</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Form &amp; data</h3>
+      <div class="grid" style="grid-template-columns: minmax(260px, 360px) 1fr;">
+        <div class="panel">
+          <div class="field">
+            <label for="em-${id}">School email</label>
+            <input id="em-${id}" type="email" placeholder="name@northwood.edu" />
+            <div class="help">We'll only use this for admissions updates.</div>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Student</th><th>Division</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Amara Okafor</td><td>High School</td><td><span class="pill ok">● Enrolled</span></td></tr>
+            <tr><td>Liam Chen</td><td>College · Yr 2</td><td><span class="pill warnp">● Pending</span></td></tr>
+            <tr><td>Sofia Reyes</td><td>Middle School</td><td><span class="pill dang">● Overdue</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Notifications</h3>
+      <div class="toast"><span class="dot" style="background:#16A34A"></span><div><div class="tt">Application submitted</div><div class="tb">We've emailed a confirmation to your inbox.</div></div></div>
+      <div class="toast"><span class="dot" style="background:#DC2626"></span><div><div class="tt">Couldn't save changes</div><div class="tb">Check your connection and try again.</div></div></div>
+    </div>
+
+    <div class="meta-foot">
+      <div class="meta-card"><b>Signature motion</b><p>${s.motion}</p></div>
+      <div class="meta-card"><b>Accessibility fix</b><p>${s.fix}</p></div>
+      <div class="meta-card"><b>Fonts</b><p>${s.fonts.display} (display) · ${s.fonts.body} (body)</p></div>
+    </div>
+  </div>`;
+}
+
+// Apply each style's CSS variables + render
+Object.keys(STYLES).forEach(id => {
+  const el = document.getElementById(id);
+  const c = STYLES[id].css;
+  const set = (k, v) => el.style.setProperty(k, v);
+  set('--page-bg', c.pageBg); set('--heading', c.heading); set('--body', c.body); set('--muted', c.muted);
+  set('--panel-bg', c.panelBg); set('--panel-border', c.panelBorder); set('--panel-backdrop', c.panelBackdrop);
+  set('--panel-shadow', c.panelShadow); set('--panel-radius', c.panelRadius);
+  set('--btn-bg', c.btnBg); set('--btn-color', c.btnColor); set('--btn-shadow', c.btnShadow);
+  set('--accent-bg', c.accentBg); set('--accent-text', c.accentText);
+  set('--input-bg', c.inputBg); set('--input-border', c.inputBorder);
+  set('--ring-offset', STYLES[id].ringOffset);
+  set('--font-display', "'" + STYLES[id].fonts.display + "'");
+  set('--font-body', "'" + STYLES[id].fonts.body + "'");
+  el.innerHTML = render(id);
+});
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab'); if (!btn) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.style-page').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.target).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>

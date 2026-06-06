@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   CLAYMORPHISM SKIN — derived from design-tokens.js
+   ============================================================ */
+
+@layer base {
+  :root {
+    --page-bg: radial-gradient(120% 120% at 12% 8%, #f4f1fc 0%, #eef1fe 38%, #fbf1ea 100%);
+    --heading: #312e81; /* indigo-900 */
+    --body: #1e293b;    /* slate-800 */
+    --muted: #475569;   /* slate-600 */
+    --accent-text: #9a3412;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--page-bg);
+    background-attachment: fixed;
+    color: var(--body);
+    font-family: theme("fontFamily.sans");
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100dvh;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: theme("fontFamily.display");
+    color: var(--heading);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* Visible focus ring on every interactive element (never removed) */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #4f46e5;
+    border-radius: 8px;
+  }
+
+  ::selection {
+    background: #c7d2fe;
+    color: #1e1b4b;
+  }
+}
+
+@layer components {
+  /* Puffy clay surface (cards, panels) */
+  .clay {
+    background: linear-gradient(145deg, #ffffff 0%, #eef0ff 100%);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: theme("borderRadius.clay");
+    box-shadow: theme("boxShadow.clay");
+  }
+
+  /* Soft inset well (inputs, pressed regions) */
+  .clay-inset {
+    background: linear-gradient(145deg, #eef0ff 0%, #f6f7ff 100%);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    box-shadow: theme("boxShadow.clay-pressed");
+  }
+
+  /* Clay button base — pair with bg gradient + text color */
+  .clay-btn {
+    box-shadow: theme("boxShadow.clay-btn");
+    transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.2s ease, filter 0.15s ease;
+    will-change: transform;
+  }
+  .clay-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    filter: brightness(1.04);
+  }
+  .clay-btn:active {
+    transform: scale(0.93);
+    box-shadow: theme("boxShadow.clay-pressed");
+  }
+
+  /* Interactive clay card lift */
+  .clay-lift {
+    transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.26s ease;
+  }
+  .clay-lift:hover {
+    transform: translateY(-6px) scale(1.015);
+  }
+
+  /* Scroll-reveal (toggled by IntersectionObserver via Reveal.jsx) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* decorative blurred clay blobs for backgrounds */
+  .blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(48px);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/* Respect reduced-motion: kill transforms/animations, keep content visible */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

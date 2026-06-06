@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Northwood — Design Theme Gallery (check 1 by 1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Newsreader:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b0f1a; color: #e2e8f0; -webkit-font-smoothing: antialiased; }
+
+  /* ---- App chrome (neutral, theme-independent) ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50; background: #0b0f1a; border-bottom: 1px solid #1e2638;
+    padding: 14px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  }
+  .topbar h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; margin-right: 8px; }
+  .topbar h1 span { color: #94a3b8; font-weight: 500; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .tab {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #2a3550;
+    background: #131a2b; color: #cbd5e1; padding: 8px 14px; border-radius: 999px; transition: all .15s ease;
+  }
+  .tab:hover { border-color: #3b4a6b; background: #1a2336; color: #fff; }
+  .tab.active { background: #4F46E5; border-color: #4F46E5; color: #fff; }
+  .tab .pin { color: #fcd34d; }
+  .hint { font-size: 12px; color: #64748b; width: 100%; margin-top: 4px; }
+
+  /* ---- Theme page (the surface that adopts each theme's tokens) ---- */
+  .stage { padding: 28px 20px 80px; max-width: 1200px; margin: 0 auto; }
+  .theme-page { display: none; }
+  .theme-page.active { display: block; }
+
+  .surface {
+    background: var(--canvas); color: var(--text-body); border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(0,0,0,.06); box-shadow: 0 30px 80px -30px rgba(0,0,0,.6);
+  }
+  .ph-head { padding: 32px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .ph-name { font-family: var(--font-display); color: var(--text-heading); font-size: 40px; line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .scorebadge { font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: var(--brand-tint); color: var(--primary); border: 1px solid var(--border); }
+  .scorebadge.win { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .scorebadge.warn { background: #FEE2E2; color: #991B1B; border-color: #fecaca; }
+  .ph-philo { color: var(--text-body); font-size: 16px; line-height: 1.6; max-width: 70ch; margin-top: 6px; }
+  .ph-perc { color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 75ch; margin-top: 10px; }
+
+  .block { padding: 28px 32px; border-bottom: 1px solid var(--border); }
+  .block:last-child { border-bottom: 0; }
+  .block > h3 {
+    font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 18px;
+  }
+
+  /* palette */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 12px; }
+  .sw { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .sw .chip { height: 64px; display: flex; align-items: flex-end; padding: 8px; }
+  .sw .meta { padding: 8px 10px; }
+  .sw .role { font-size: 12px; font-weight: 600; color: var(--text-heading); }
+  .sw .hex { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+  .sw .note { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* typography */
+  .type-display { font-family: var(--font-display); color: var(--text-heading); font-size: 48px; line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; }
+  .type-h2 { font-family: var(--font-display); color: var(--text-heading); font-size: 28px; font-weight: 600; margin-top: 14px; letter-spacing: -0.01em; }
+  .type-body { font-family: var(--font-body); color: var(--text-body); font-size: 16px; line-height: 1.6; max-width: 65ch; margin-top: 12px; }
+  .type-meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 14px; }
+
+  /* buttons */
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { font-family: var(--font-body); font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: var(--radius-control); border: 1.5px solid transparent; cursor: pointer; transition: all .15s ease; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+  .btn-accent { background: var(--accent-solid); color: #fff; }
+  .btn-accent:hover { filter: brightness(.93); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+  .btn-outline:hover { background: var(--brand-tint); }
+  .btn-ghost { background: transparent; color: var(--text-muted); }
+  .btn-ghost:hover { background: var(--surface-muted); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary); }
+
+  /* grid of cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 18px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-card); }
+  .card .eyebrow { font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+  .card .ctitle { font-family: var(--font-display); color: var(--text-heading); font-size: 20px; font-weight: 600; margin: 8px 0; }
+  .card .cbody { font-size: 14px; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
+  .kpi .label { font-size: 11px; font-weight: 700; letter-spacing:.06em; text-transform: uppercase; color: var(--text-muted); }
+  .kpi .value { font-family: var(--font-display); font-size: 38px; font-weight: 700; color: var(--text-heading); font-variant-numeric: tabular-nums; line-height: 1.1; margin-top: 4px; }
+  .kpi .delta { font-size: 13px; font-weight: 600; color: var(--success); }
+
+  /* form */
+  .field { max-width: 360px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-heading); margin-bottom: 6px; }
+  .field input { width: 100%; font: inherit; font-size: 15px; padding: 11px 13px; border-radius: var(--radius-control); border: 1px solid var(--input-border); background: var(--surface); color: var(--text-body); }
+  .field input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 30%, transparent); }
+  .field .help { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+  .field.err input { border-color: var(--danger); }
+  .field.err .help { color: var(--danger); font-weight: 500; }
+
+  /* table */
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  thead th { background: var(--surface-muted); text-align: left; font-size: 11px; font-weight: 700; letter-spacing:.05em; text-transform: uppercase; color: var(--text-muted); padding: 12px 16px; }
+  tbody td { padding: 12px 16px; font-size: 14px; color: var(--text-body); border-top: 1px solid var(--border); }
+  tbody tr:hover td { background: var(--brand-tint); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .pill.ok { background: #DCFCE7; color: #166534; }
+  .pill.warnp { background: #FEF3C7; color: #92400E; }
+  .pill.dang { background: #FEE2E2; color: #991B1B; }
+
+  /* notifications */
+  .toast { display: flex; gap: 10px; align-items: flex-start; padding: 12px 16px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-card); margin-bottom: 10px; max-width: 460px; }
+  .toast .dot { width: 10px; height: 10px; border-radius: 999px; margin-top: 5px; flex: none; }
+  .toast .tt { font-size: 14px; font-weight: 600; color: var(--text-heading); }
+  .toast .tb { font-size: 13px; color: var(--text-muted); }
+
+  .tokens-foot { display: flex; flex-wrap: wrap; gap: 22px; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+  .tokens-foot b { color: var(--text-heading); font-weight: 600; }
+  .radius-demo { width: 56px; height: 40px; background: var(--primary); border-radius: var(--radius); }
+  .shadow-demo { width: 80px; height: 40px; background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-card); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Northwood <span>· Design Theme Gallery</span></h1>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-target="t2"><span class="pin">★</span> Bright Horizon</button>
+    <button class="tab" data-target="t1">Heritage Scholar</button>
+    <button class="tab" data-target="t3">Civic Minimal</button>
+    <button class="tab" data-target="t4">Editorial Prestige</button>
+    <button class="tab" data-target="t5">Campus Community</button>
+  </nav>
+  <p class="hint">Click a tab to view each theme one at a time. ★ = recommended. Live colors, fonts &amp; components rendered from each theme's real tokens.</p>
+</header>
+
+<main class="stage">
+
+  <!-- ============ THEME 2: BRIGHT HORIZON (recommended) ============ -->
+  <section class="theme-page active" id="t2" style="
+    --primary:#4F46E5; --primary-hover:#4338CA; --accent:#EA580C; --accent-solid:#C2410C;
+    --success:#15803D; --warning:#B45309; --danger:#DC2626;
+    --canvas:#F8FAFC; --surface:#FFFFFF; --surface-muted:#F1F5F9; --border:#E2E8F0; --input-border:#CBD5E1; --brand-tint:#EEF2FF;
+    --text-heading:#0F172A; --text-body:#1E293B; --text-muted:#475569;
+    --font-display:'Outfit'; --font-body:'Inter'; --font-mono:'JetBrains Mono';
+    --radius:14px; --radius-control:8px; --shadow-card:0 1px 3px rgba(15,23,42,.08),0 1px 2px -1px rgba(15,23,42,.06);">
+  </section>
+
+  <!-- ============ THEME 1: HERITAGE SCHOLAR ============ -->
+  <section class="theme-page" id="t1" style="
+    --primary:#1E3A8A; --primary-hover:#1A347C; --accent:#C8961E; --accent-solid:#A77C12;
+    --success:#15803D; --warning:#B45309; --danger:#B91C1C;
+    --canvas:#F6F7FB; --surface:#FFFFFF; --surface-muted:#EEF1F7; --border:#E2E6F0; --input-border:#7A88A8; --brand-tint:#EEF2FB;
+    --text-heading:#1A2238; --text-body:#2D3650; --text-muted:#55607A;
+    --font-display:'Fraunces'; --font-body:'Inter'; --font-mono:'IBM Plex Mono';
+    --radius:12px; --radius-control:8px; --shadow-card:0 4px 8px rgba(19,31,71,.08),0 2px 4px rgba(19,31,71,.06);">
+  </section>
+
+  <!-- ============ THEME 3: CIVIC MINIMAL ============ -->
+  <section class="theme-page" id="t3" style="
+    --primary:#2563EB; --primary-hover:#1D4ED8; --accent:#2563EB; --accent-solid:#1D4ED8;
+    --success:#15803D; --warning:#B45309; --danger:#DC2626;
+    --canvas:#F8FAFC; --surface:#FFFFFF; --surface-muted:#F1F5F9; --border:#E2E8F0; --input-border:#CBD5E1; --brand-tint:#EFF4FF;
+    --text-heading:#0F172A; --text-body:#475569; --text-muted:#64748B;
+    --font-display:'Inter'; --font-body:'Inter'; --font-mono:'JetBrains Mono';
+    --radius:8px; --radius-control:6px; --shadow-card:0 1px 3px rgba(15,23,42,.08),0 1px 2px -1px rgba(15,23,42,.06);">
+  </section>
+
+  <!-- ============ THEME 4: EDITORIAL PRESTIGE ============ -->
+  <section class="theme-page" id="t4" style="
+    --primary:#4A2C5E; --primary-hover:#5E3A76; --accent:#8C2D33; --accent-solid:#8C2D33;
+    --success:#2F6B4F; --warning:#8A5A11; --danger:#B0232A;
+    --canvas:#FBFAF7; --surface:#FFFFFF; --surface-muted:#F6F3EE; --border:#E4DFD6; --input-border:#CFC7BA; --brand-tint:#F3EEF7;
+    --text-heading:#1F1A2E; --text-body:#423B52; --text-muted:#635B73;
+    --font-display:'Newsreader'; --font-body:'Inter'; --font-mono:'IBM Plex Mono';
+    --radius:8px; --radius-control:4px; --shadow-card:0 4px 12px rgba(31,26,46,.10),0 2px 4px rgba(31,26,46,.06);">
+  </section>
+
+  <!-- ============ THEME 5: CAMPUS COMMUNITY ============ -->
+  <section class="theme-page" id="t5" style="
+    --primary:#0D9488; --primary-hover:#0F766E; --accent:#F59E0B; --accent-solid:#B45309;
+    --success:#047857; --warning:#B45309; --danger:#DC2626;
+    --canvas:#F8FAFC; --surface:#FFFFFF; --surface-muted:#F1F5F9; --border:#E2E8F0; --input-border:#CBD5E1; --brand-tint:#F0FDFA;
+    --text-heading:#0F172A; --text-body:#334155; --text-muted:#64748B;
+    --font-display:'Nunito'; --font-body:'Plus Jakarta Sans'; --font-mono:'JetBrains Mono';
+    --radius:16px; --radius-control:8px; --shadow-card:0 4px 8px rgba(15,23,42,.10),0 2px 4px rgba(15,23,42,.06);">
+  </section>
+
+</main>
+
+<script>
+  // Theme data — drives the rendered preview for each section
+  const THEMES = {
+    t2: {
+      name: "Bright Horizon", scores: ["Brand 9","A11y 6→fixed","Scale 9","Total 24"], win: true, warn: false,
+      philo: "“Calm structure, energetic moments.” Quiet surfaces so color is spent deliberately — indigo carries actions and nav state, one warm orange accent per view.",
+      perc: "Families read approachable + safe; college students read ambitious + modern; staff read efficient at density. The same brand in marketing and in work mode.",
+      colors: [["Primary","#4F46E5","white-on 6.3:1"],["Secondary","#818CF8","decorative/large"],["Accent","#EA580C","text/solid #C2410C 5.0:1"],["Success","#16A34A","text #15803D"],["Warning","#D97706","text #B45309"],["Danger","#DC2626","4.83:1"]],
+      fonts: "Outfit (display) · Inter (body) · JetBrains Mono"
+    },
+    t1: {
+      name: "Heritage Scholar", scores: ["Brand 8","A11y 9","Scale 8","Total 25"], win: false, warn: false,
+      philo: "Traditional-but-modern academic authority — a credentialed body of record. Navy carries 90% of the weight; gold is a sparing “seal of distinction.”",
+      perc: "Established, prestigious, trustworthy — strongest for donors and college, warm-but-serious for parents. Ages gracefully.",
+      colors: [["Primary","#1E3A8A","white-on 10.4:1"],["Secondary","#16295F","app chrome"],["Accent gold","#C8961E","text #8A6A12 5.1:1"],["Success","#15803D","5.0:1"],["Warning","#B45309","4.8:1"],["Danger","#B91C1C","6.5:1"]],
+      fonts: "Fraunces (serif display) · Inter (body) · IBM Plex Mono"
+    },
+    t3: {
+      name: "Civic Minimal", scores: ["Brand 6","A11y 9","Scale 9","Total 24"], win: false, warn: false,
+      philo: "Swiss minimalism — “ink does the talking, blue does the pointing.” Neutrals carry the design; one royal blue used as a tint system.",
+      perc: "Orderly, modern, intellectually credible — closer to a top-tier university or civic brand than a startup. Calm under heavy data.",
+      colors: [["Primary","#2563EB","white-on 5.2:1"],["Ink","#0F172A","17.9:1"],["Accent","#2563EB","blue tints only"],["Success","#15803D","5.0:1"],["Warning","#B45309","5.0:1"],["Danger","#DC2626","4.8:1"]],
+      fonts: "Inter only (single-family) · Geist/JetBrains Mono"
+    },
+    t4: {
+      name: "Editorial Prestige", scores: ["Brand 8","A11y 8","Scale 6","Total 22"], win: false, warn: false,
+      philo: "Typographically-led — “every screen is a page in one publication,” like a great university press. Ink-plum authority, oxblood action, gold credentials.",
+      perc: "Distinguished, intellectual, magazine-quality without being stuffy. Warm paper neutrals keep it family-friendly; serif + plum read prestige.",
+      colors: [["Ink-Plum","#4A2C5E","11.6:1"],["Slate-Ink","#2B2740","app chrome"],["Oxblood","#8C2D33","8.3:1"],["Gold","#9A7A1E","text #7A5F12"],["Success","#2F6B4F","6.3:1"],["Danger","#B0232A","6.7:1"]],
+      fonts: "Newsreader (serif) · Space Grotesk (UI) · Inter (reading) · IBM Plex Mono"
+    },
+    t5: {
+      name: "Campus Community", scores: ["Brand 8","A11y 4 ⚠","Scale 7","Total 19"], win: false, warn: true,
+      philo: "“Warm humanist, systematized.” Warmth in the palette and rounded letterforms; rigor in a strict 8px grid. Teal trust spine + sparing warm amber.",
+      perc: "Warmest, most explicitly family-resonant. Deep-pine anchor dials up to higher-ed authority. ⚠ As specified, the primary teal FAILS WCAG AA (3.74:1).",
+      colors: [["Primary teal","#0D9488","⚠ 3.74:1 FAILS"],["Deep-pine","#134E4A","11.9:1"],["Amber","#F59E0B","text #B45309"],["Success","#047857","5.0:1"],["Warning","#B45309","4.8:1"],["Danger","#DC2626","4.8:1"]],
+      fonts: "Nunito (display ≥20px) · Plus Jakarta Sans (body) · JetBrains Mono"
+    }
+  };
+
+  function render(id) {
+    const d = THEMES[id];
+    const sw = d.colors.map(c =>
+      `<div class="sw"><div class="chip" style="background:${c[1]}"></div>
+        <div class="meta"><div class="role">${c[0]}</div><div class="hex">${c[1]}</div><div class="note">${c[2]}</div></div></div>`).join("");
+    const badges = d.scores.map((s,i) =>
+      `<span class="scorebadge ${i===d.scores.length-1 ? (d.win?'win':(d.warn?'warn':'')) : ''}">${s}</span>`).join("");
+
+    return `
+    <div class="surface">
+      <div class="ph-head">
+        <div class="ph-name">${d.name}${d.win?' ★':''}</div>
+        <div class="badges">${badges}</div>
+        <p class="ph-philo">${d.philo}</p>
+        <p class="ph-perc">${d.perc}</p>
+      </div>
+
+      <div class="block"><h3>Color palette</h3><div class="swatches">${sw}</div></div>
+
+      <div class="block">
+        <h3>Typography — ${d.fonts}</h3>
+        <div class="type-display">Where curiosity becomes character.</div>
+        <div class="type-h2">From kindergarten to college, one community.</div>
+        <p class="type-body">Northwood brings together early learning, secondary school, and higher education under a single, accountable institution. Our students grow with us — and so does the level of ambition we hold for them.</p>
+        <div class="type-meta">Aa Bb Cc 0123456789 — display / body / mono</div>
+      </div>
+
+      <div class="block">
+        <h3>Buttons &amp; states</h3>
+        <div class="row">
+          <button class="btn btn-primary">Apply now</button>
+          <button class="btn btn-accent">Schedule a visit</button>
+          <button class="btn btn-outline">Explore programs</button>
+          <button class="btn btn-ghost">Learn more</button>
+          <button class="btn btn-danger">Withdraw</button>
+          <button class="btn btn-primary" disabled>Disabled</button>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Cards</h3>
+        <div class="cards">
+          <div class="card">
+            <div class="eyebrow">College · Engineering</div>
+            <div class="ctitle">B.S. Computer Science</div>
+            <div class="cbody">A four-year program blending theory, labs, and industry capstones with faculty mentorship.</div>
+            <button class="btn btn-primary">View program</button>
+          </div>
+          <div class="card kpi">
+            <div class="label">Enrolled students</div>
+            <div class="value">3,482</div>
+            <div class="delta">▲ 6.2% vs last year</div>
+          </div>
+          <div class="card">
+            <div class="eyebrow">K-12 · Admissions</div>
+            <div class="ctitle">Open House</div>
+            <div class="cbody">Tour the campus, meet teachers, and see a day in the life of a Northwood student.</div>
+            <button class="btn btn-accent">Reserve a spot</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Form field</h3>
+        <div class="row" style="align-items:flex-start; gap:32px;">
+          <div class="field">
+            <label for="em-${id}">School email</label>
+            <input id="em-${id}" type="email" placeholder="name@northwood.edu" />
+            <div class="help">We'll only use this for admissions updates.</div>
+          </div>
+          <div class="field err">
+            <label for="er-${id}">Student ID</label>
+            <input id="er-${id}" type="text" value="abc" />
+            <div class="help">⚠ Enter a valid 7-digit ID, e.g. 2048817.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Data table</h3>
+        <table>
+          <thead><tr><th>Student</th><th>Division</th><th>GPA</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Amara Okafor</td><td>High School</td><td style="font-variant-numeric:tabular-nums">3.92</td><td><span class="pill ok">● Enrolled</span></td></tr>
+            <tr><td>Liam Chen</td><td>College · Yr 2</td><td style="font-variant-numeric:tabular-nums">3.41</td><td><span class="pill warnp">● Pending</span></td></tr>
+            <tr><td>Sofia Reyes</td><td>Middle School</td><td style="font-variant-numeric:tabular-nums">3.78</td><td><span class="pill dang">● Overdue</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="block">
+        <h3>Notifications</h3>
+        <div class="toast"><span class="dot" style="background:var(--success)"></span><div><div class="tt">Application submitted</div><div class="tb">We've emailed a confirmation to your inbox.</div></div></div>
+        <div class="toast"><span class="dot" style="background:var(--warning)"></span><div><div class="tt">Payment due soon</div><div class="tb">Tuition deposit is due in 3 days.</div></div></div>
+        <div class="toast"><span class="dot" style="background:var(--danger)"></span><div><div class="tt">Couldn't save changes</div><div class="tb">Check your connection and try again.</div></div></div>
+      </div>
+
+      <div class="block">
+        <h3>Tokens at a glance</h3>
+        <div class="tokens-foot">
+          <span><b>Radius</b><br><span class="radius-demo" style="display:inline-block;margin-top:6px"></span></span>
+          <span><b>Elevation</b><br><span class="shadow-demo" style="display:inline-block;margin-top:6px"></span></span>
+          <span><b>Fonts</b><br>${d.fonts}</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Populate every section once
+  Object.keys(THEMES).forEach(id => { document.getElementById(id).innerHTML = render(id); });
+
+  // Tab switching = view one theme at a time
+  document.getElementById('tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab'); if (!btn) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.theme-page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
